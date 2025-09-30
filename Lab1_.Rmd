@@ -163,23 +163,6 @@ test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 ```
 
 ```{r}
-# train <- train %>%
-#   mutate(train = paste(Headline, Body))
-# tidy_text <- unnest_tokens(train, 'splitted', text, token="words") %>%
-#              filter(!splitted %in% splitted_stop_words)
-# 
-# tidy_text %>% count(splitted,sort=TRUE)
-```
-```{r}
-# tidy_text <- tidy_text %>%
-#   mutate(doc_id = row_number())
-# tidy_text <- tidy_text %>%
-#   mutate(value = 1)
-# colnames(tidy_text)
-# str(tidy_text)
-```
-
-```{r}
 install.packages("stringr")
 library(stringr)
 install.packages("Matrix")
@@ -204,6 +187,7 @@ clean_corpus <- function(corpus){
   # corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, content_transformer(tolower))
   corpus <- tm_map(corpus, removeWords, splitted_stop_words)
+  corpus <- tm_map(corpus, removeNumbers)
     return(corpus)
 }
 clean_corp <- clean_corpus(tweets_corpus)
@@ -216,6 +200,38 @@ word_summary <- rowsum(tweets_m, group = labels)
 
 word_summary
 ```
+```{r}
+tweets_text1 <- paste(test$Headline, test$Body)
+tweets_text1 <- str_replace_all(tweets_text1, "http[s]?://\\S+", " ")
+tweets_text <- str_replace_all(tweets_text1, "[^a-zA-Z\\s]", " ")
+tweets_text1 <- str_squish(tweets_text1)
+
+tweets_source1 <- VectorSource(tweets_text1)
+
+tweets_corpus1 <- VCorpus(tweets_source1)
+
+tweets_corpus1
+
+clean_corpus1 <- function(corpus1){
+  # corpus <- tm_map(corpus, stripWhitespace)
+  # corpus <- tm_map(corpus, removePunctuation)
+  corpus1 <- tm_map(corpus1, content_transformer(tolower))
+  corpus1 <- tm_map(corpus1, removeWords, splitted_stop_words)
+  corpus1 <- tm_map(corpus1, removeNumbers)
+    return(corpus1)
+}
+clean_corp1 <- clean_corpus1(tweets_corpus1)
+
+tweets_dtm1 <- DocumentTermMatrix(clean_corp1)
+tweets_m1 <- as.matrix(tweets_dtm1)
+labels <- test$Label
+
+word_summary1 <- rowsum(tweets_m1, group = labels)
+
+word_summary1
+```
+```
+
 
 ```{r}
 word_counts <- as.data.frame(word_summary) %>%
