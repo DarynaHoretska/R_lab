@@ -203,7 +203,7 @@ word_summary
 ```{r}
 tweets_text1 <- paste(test$Headline, test$Body)
 tweets_text1 <- str_replace_all(tweets_text1, "http[s]?://\\S+", " ")
-tweets_text <- str_replace_all(tweets_text1, "[^a-zA-Z\\s]", " ")
+tweets_text1 <- str_replace_all(tweets_text1, "[^a-zA-Z\\s]", " ")
 tweets_text1 <- str_squish(tweets_text1)
 
 tweets_source1 <- VectorSource(tweets_text1)
